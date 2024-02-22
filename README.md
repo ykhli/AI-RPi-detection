@@ -1,1 +1,1 @@
-# cloud-kitty-finder
+# multi-modal-starter-kit
