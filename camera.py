@@ -6,11 +6,13 @@ from openai import OpenAI
 import base64
 import cv2
 import numpy as np
+from elevenlabs import generate, play, set_api_key, voices
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
 save_dir = os.path.join(os.getcwd(), save_location)
 os.makedirs(save_dir, exist_ok=True)
+set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
 
 openAI = OpenAI()
 
@@ -18,9 +20,23 @@ picam2 = Picamera2()
 picam2.start()
 time.sleep(2)
 
+def play_audio(text):
+    audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
+
+    unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
+    dir_path = os.path.join("narration", unique_id)
+    os.makedirs(dir_path, exist_ok=True)
+    file_path = os.path.join(dir_path, "audio.wav")
+
+    with open(file_path, "wb") as f:
+        f.write(audio)
+
+    play(audio)
+
 
 def describe_image(base64_images, context):
     # for testing
+    logging.info(f"base64_images: {len(base64_images)}")
     response = openAI.chat.completions.create(
         model="gpt-4-vision-preview",
         messages=[
@@ -37,7 +53,7 @@ def describe_image(base64_images, context):
             {
                 "role": "user",
                 "content": [
-                    "These are frames a camera stream. Generate a compelling description of the sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
+                    "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
                     # {"type": "text", "text": "Describe this image"},
                     # {
                     #     "type": "image_url",
@@ -128,6 +144,7 @@ def main():
             aiResponse = describe_image(base64Frames, context)
             save_image_collage(base64Frames)
             logging.info(f"AI Response: {aiResponse}")
+            play_audio(aiResponse)
             context = context + [{"role": "assistant", "content": aiResponse}]
             base64Frames = []
 
