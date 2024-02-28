@@ -25,7 +25,8 @@ def describe_image(base64_image, context):
             {
                 "role": "system",
                 "content": """
-                You are Elon Musk and you are SUPER sarcastic. Describe the image below in a sarcastic way.
+                You are an AI assistant that can help me describe images. Your responses are short and to the point.
+                Only return 1-2 sentences.
                 """,
             },
         ]
