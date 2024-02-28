@@ -4,6 +4,8 @@ import time, os, logging
 from datetime import datetime
 from openai import OpenAI
 import base64
+import cv2
+import numpy as np
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
@@ -17,7 +19,7 @@ picam2.start()
 time.sleep(2)
 
 
-def describe_image(base64_image, context):
+def describe_image(base64_images, context):
     # for testing
     response = openAI.chat.completions.create(
         model="gpt-4-vision-preview",
@@ -35,11 +37,12 @@ def describe_image(base64_image, context):
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": "Describe this image"},
-                    {
-                        "type": "image_url",
-                        "image_url": f"data:image/jpeg;base64,{base64_image}",
-                    },
+                    "These are frames a camera stream. Generate a compelling description of the sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
+                    # {"type": "text", "text": "Describe this image"},
+                    # {
+                    #     "type": "image_url",
+                    #     "image_url": f"data:image/jpeg;base64,{base64_image}",
+                    # },
                 ],
             },
         ],
@@ -76,7 +79,6 @@ def take_photo():
         image_name = f'{timestamp}.jpg'
         current_dir = os.path.dirname(__file__)
         static_dir = os.path.join(current_dir, save_dir)
-        logging.info(f"Capturing image. Path: {static_dir}")
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
         request.save("main", filepath)
@@ -86,16 +88,50 @@ def take_photo():
     except Exception as e:
         logging.error(f"Error capturing image: {e}")
 
+def save_image_collage(base64_images):
+        # Assuming base64Frames is populated as in your provided code
+    montage = None
+
+    for base64_frame in base64_images:
+        # Decode the base64 string
+        jpg_original = base64.b64decode(base64_frame)
+        
+        # Convert binary data to numpy array
+        jpg_as_np = np.frombuffer(jpg_original, dtype=np.uint8)
+        
+        # Decode numpy array to image
+        frame = cv2.imdecode(jpg_as_np, flags=1)
+        
+        if montage is None:
+            # Initialize the montage with the first frame
+            montage = frame
+        else:
+            # Concatenate the current frame horizontally to the montage
+            montage = np.hstack((montage, frame))
+
+    # Save the montage as an image
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_path = os.path.join(save_dir, f"montage_{timestamp}.jpg")
+    cv2.imwrite(file_path, montage)
+    logging.info(f"Montage saved successfully. Path: {file_path}")
+
 def main():
     context = []
+    base64Frames = []
+    numOfFrames = 5
     while True:
         filePath = capture_photo()
         base64_image = encode_image(filePath)
-        aiResponse = describe_image(base64_image, context)
-        logging.info(f"AI Response: {aiResponse}")
-        context = context + [{"role": "assistant", "content": aiResponse}]
+        if len(base64Frames) < numOfFrames:
+            base64Frames.append(base64_image)
+        else:
+            aiResponse = describe_image(base64Frames, context)
+            save_image_collage(base64Frames)
+            logging.info(f"AI Response: {aiResponse}")
+            context = context + [{"role": "assistant", "content": aiResponse}]
+            base64Frames = []
 
-        time.sleep(3)
+        time.sleep(2)
 
 if __name__ == "__main__":
     main()
