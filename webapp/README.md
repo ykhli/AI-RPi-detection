@@ -2,9 +2,10 @@ The project is hosted at [multi-modal-starter-kit.fly.dev](https://multi-modal-s
 
 ## Development setup
 
-First, fork the repo and install dependencies:
+First, fork the repo and change to `webapp dir` to install dependencies:
 
 ```bash
+cd webapp
 npm run install
 ```
 
