@@ -7,12 +7,23 @@ import base64
 import cv2
 import numpy as np
 from elevenlabs import generate, play, set_api_key, voices
+import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Create S3 service client
+svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
+
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
 save_dir = os.path.join(os.getcwd(), save_location)
 os.makedirs(save_dir, exist_ok=True)
 set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
+IMAGE_CAPTURE_INTERVAL = 2
+COLLAGE_FRAMES = 5
+BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
 openAI = OpenAI()
 
@@ -100,13 +111,19 @@ def take_photo():
         request.save("main", filepath)
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
+        
+        # save to Tigris bucket
+        try: 
+            svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
+        except Exception as e:
+            logging.error(f"Error uploading {image_name} to Tigris: {e}")
+            
         return filepath
     except Exception as e:
         logging.error(f"Error capturing image: {e}")
 
 def save_image_collage(base64_images):
-        # Assuming base64Frames is populated as in your provided code
-    montage = None
+    collage = None
 
     for base64_frame in base64_images:
         # Decode the base64 string
@@ -118,37 +135,42 @@ def save_image_collage(base64_images):
         # Decode numpy array to image
         frame = cv2.imdecode(jpg_as_np, flags=1)
         
-        if montage is None:
-            # Initialize the montage with the first frame
-            montage = frame
+        if collage is None:
+            collage = frame
         else:
-            # Concatenate the current frame horizontally to the montage
-            montage = np.hstack((montage, frame))
+            collage = np.hstack((collage, frame))
 
     # Save the montage as an image
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_path = os.path.join(save_dir, f"montage_{timestamp}.jpg")
-    cv2.imwrite(file_path, montage)
-    logging.info(f"Montage saved successfully. Path: {file_path}")
+    file_name = f"collage_{timestamp}.jpg"
+    file_path = os.path.join(save_dir, file_name)
+    cv2.imwrite(file_path, collage)
+    # save to Tigris bucket
+    try: 
+        svc.upload_file(file_path, BUCKET_NAME, "collage/"+file_name)
+    except Exception as e:
+        logging.error(f"Error uploading {file_name} to Tigris: {e}")
+    logging.info(f"Collage saved successfully. Path: {file_path}")
 
 def main():
     context = []
     base64Frames = []
-    numOfFrames = 5
+
     while True:
         filePath = capture_photo()
         base64_image = encode_image(filePath)
-        if len(base64Frames) < numOfFrames:
+        if len(base64Frames) < COLLAGE_FRAMES:
             base64Frames.append(base64_image)
         else:
-            aiResponse = describe_image(base64Frames, context)
+            # ---- Uncomment to test AI response on device while developing ----
+            # aiResponse = describe_image(base64Frames, context)
+            # logging.info(f"AI Response: {aiResponse}")
+            # play_audio(aiResponse)
+            # context = context + [{"role": "assistant", "content": aiResponse}]
             save_image_collage(base64Frames)
-            logging.info(f"AI Response: {aiResponse}")
-            play_audio(aiResponse)
-            context = context + [{"role": "assistant", "content": aiResponse}]
             base64Frames = []
 
-        time.sleep(2)
+        time.sleep(IMAGE_CAPTURE_INTERVAL)
 
 if __name__ == "__main__":
     main()
