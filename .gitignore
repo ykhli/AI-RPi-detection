@@ -3,3 +3,4 @@
 *.pem
 .idea/
 .vscode
+.env
