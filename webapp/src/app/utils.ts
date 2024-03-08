@@ -22,7 +22,7 @@ export async function describeImage(url: string) {
           },
           {
             type: "image_url",
-            image_url: { url },
+            image_url: { url: url },
           },
         ],
       },

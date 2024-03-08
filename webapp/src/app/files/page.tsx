@@ -9,10 +9,10 @@ export default async function Page () {
     method: 'GET',
     cache: 'no-store'
   })
-  const files: FilesResponse = await res.json()
+  const files: FilesResponse = await res.json();
   // map the list of files to a link
   return (
-    <body className={styles.body}>
+    <div className={styles.body}>
     <div className={styles.list}>
       <h2>Available videos</h2>
       <ul>
@@ -28,6 +28,6 @@ export default async function Page () {
         ))}
       </ul>
     </div>
-    </body>
+    </div>
   )
 }

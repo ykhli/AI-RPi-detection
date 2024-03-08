@@ -20,7 +20,7 @@ export type FilesResponse = Array<TigrisObject>;
 
 export async function POST() {
   const listObjectsV2Command = new ListObjectsV2Command({
-    Bucket: process.env.BUCKET_NAME,
+    Bucket: process.env.NEXT_PUBLIC_BUCKET_NAME,
     Prefix: `${process.env.COLLAGE_FOLER_NAME!}/`,
   });
   const resp = await client.send(listObjectsV2Command);
@@ -39,7 +39,7 @@ export async function POST() {
   }
 
   const getObjectCommand = new GetObjectCommand({
-    Bucket: process.env.BUCKET_NAME,
+    Bucket: process.env.NEXT_PUBLIC_BUCKET_NAME,
     Key: latestFile.Key,
   });
 

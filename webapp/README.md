@@ -11,7 +11,7 @@ npm run install
 
 The project uses [Next.js](https://nextjs.org/docs) to load and display files
 from [Tigris object store](https://www.tigrisdata.com/docs/) on the webapp. For development,
-the files are hosted in bucket mentioned in [`.env`](.env) environment file as `BUCKET_NAME`, free to
+the files are hosted in bucket mentioned in [`.env`](.env) environment file as `NEXT_PUBLIC_BUCKET_NAME`, free to
 use your own. 
 
 Before running the web server, let's set the credentials to access the Tigris bucket. You'd need
