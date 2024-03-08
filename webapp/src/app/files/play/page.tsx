@@ -27,8 +27,8 @@ export default function Page({ searchParams }: {
     }
   }, [narration])
 
-  const vidRef = useRef(null);
-  const canRef = useRef(null);
+  const vidRef = useRef<HTMLVideoElement>(null);
+  const canRef = useRef<HTMLCanvasElement>(null);
 
   const handlePlayVideo = () => {
     if (vidRef.current != null) {
@@ -39,7 +39,7 @@ export default function Page({ searchParams }: {
   function captureFrame() {
     if (canRef.current && vidRef.current) {
       vidRef.current.pause();
-      const context = canRef.current.getContext('2d');
+      const context = canRef.current.getContext('2d')!;
       context.drawImage(vidRef.current, 0, 0, 640, 400);
       const dataURL = canRef.current.toDataURL('image/jpeg', 1);
       setShowSpinner(true);
@@ -50,7 +50,7 @@ export default function Page({ searchParams }: {
         })
       }).then(async (response) => {
         setShowSpinner(false);
-        vidRef.current.play();
+        vidRef.current!.play();
         const result = await response.text();
         setNarration(result);
       });
