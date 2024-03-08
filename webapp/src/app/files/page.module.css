@@ -1,3 +1,4 @@
+
 .body {
   display: flex;
   flex-direction: column;
@@ -13,7 +14,7 @@
 }
 
 .list h2 {
-  color: #fff;
+  color: #000;
   font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 10px;
@@ -26,7 +27,7 @@
 .list ul li {
   position: relative;
   left: 0;
-  color: #fce4ec;
+  color: #000;
   list-style: none;
   margin: 4px 0;
   border-left: 2px solid #f50057;
