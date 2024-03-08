@@ -5,7 +5,6 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import OpenAI from "openai";
 
 export const dynamic = "force-dynamic";
 const client = new S3Client();
