@@ -124,16 +124,29 @@ def take_photo():
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
         image = request.make_image("main")
+        model_image = image.resize(224,224)
+        # preprocess
+        input_tensor = preprocess(model_image)
+
+        # create a mini-batch as expected by the model
+        input_batch = input_tensor.unsqueeze(0)
+
+        output = net(input_batch)
+        top = list(enumerate(output[0].softmax(dim=0)))
+        top.sort(key=lambda x: x[1], reverse=True)
+        for idx, val in top[:10]:
+            print(f"{val.item()*100:.2f}% {classes[idx]}")
+
         # request.save("main", filepath)
         image.save(filepath)
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
         
         # save to Tigris bucket
-        try: 
-            svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
-        except Exception as e:
-            logging.error(f"Error uploading {image_name} to Tigris: {e}")
+        # try: 
+        #     svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
+        # except Exception as e:
+        #     logging.error(f"Error uploading {image_name} to Tigris: {e}")
             
         return filepath
     except Exception as e:
