@@ -134,7 +134,7 @@ def take_photo():
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
 
-        model_image = image.resize(size).convert('RGB')
+        model_image = image.resize(size).rotate(180).convert('RGB')
         # preprocess
         input_tensor = preprocess(model_image)
 
@@ -144,7 +144,9 @@ def take_photo():
         output = net(input_batch)
         logging.info(output)
         top = list(enumerate(output[0].softmax(dim=0)))
+        logging.info(f"printing top {top}")
         top.sort(key=lambda x: x[1], reverse=True)
+        logging.info(f"printing sorted top {top}")
         for idx, val in top[:10]:
             print(f"{val.item()*100:.2f}% {classes[idx]}")
         # save to Tigris bucket
