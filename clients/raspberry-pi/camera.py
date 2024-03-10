@@ -40,7 +40,7 @@ IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
-openAI = OpenAI()
+# openAI = OpenAI()
 
 picam2 = Picamera2()
 picam2.start()
@@ -60,37 +60,37 @@ time.sleep(2)
 #     play(audio)
 
 
-def describe_image(base64_images, context):
-    # for testing
-    logging.info(f"base64_images: {len(base64_images)}")
-    response = openAI.chat.completions.create(
-        model="gpt-4-vision-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": """
-                You are an AI assistant that can help me describe images. Your responses are short and to the point.
-                Only return 1-2 sentences.
-                """,
-            },
-        ]
-        + context
-        + [
-            {
-                "role": "user",
-                "content": [
-                    "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
-                    # {"type": "text", "text": "Describe this image"},
-                    # {
-                    #     "type": "image_url",
-                    #     "image_url": f"data:image/jpeg;base64,{base64_image}",
-                    # },
-                ],
-            },
-        ],
-        max_tokens=500,
-    )
-    return response.choices[0].message.content
+# def describe_image(base64_images, context):
+#     # for testing
+#     logging.info(f"base64_images: {len(base64_images)}")
+#     response = openAI.chat.completions.create(
+#         model="gpt-4-vision-preview",
+#         messages=[
+#             {
+#                 "role": "system",
+#                 "content": """
+#                 You are an AI assistant that can help me describe images. Your responses are short and to the point.
+#                 Only return 1-2 sentences.
+#                 """,
+#             },
+#         ]
+#         + context
+#         + [
+#             {
+#                 "role": "user",
+#                 "content": [
+#                     "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
+#                     # {"type": "text", "text": "Describe this image"},
+#                     # {
+#                     #     "type": "image_url",
+#                     #     "image_url": f"data:image/jpeg;base64,{base64_image}",
+#                     # },
+#                 ],
+#             },
+#         ],
+#         max_tokens=500,
+#     )
+#     return response.choices[0].message.content
 
 
 def capture_photo():
