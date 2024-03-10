@@ -10,7 +10,22 @@ from elevenlabs import generate, play, set_api_key, voices
 import boto3
 from dotenv import load_dotenv
 
+import torch
+from torchvision import models, transforms
+
 load_dotenv()
+
+torch.backends.quantized.engine = 'qnnpack'
+
+preprocess = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+net = models.quantization.mobilenet_v2(pretrained=True, quantize=True)
+# jit model to take it from ~20fps to ~30fps
+net = torch.jit.script(net)
+
 
 # Create S3 service client
 svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
@@ -108,7 +123,9 @@ def take_photo():
         static_dir = os.path.join(current_dir, save_dir)
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
-        request.save("main", filepath)
+        image = request.make_image("main")
+        # request.save("main", filepath)
+        image.save(filepath)
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
         
