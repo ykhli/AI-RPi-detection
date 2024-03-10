@@ -124,6 +124,10 @@ def take_photo():
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
         image = request.make_image("main")
+
+        # request.save("main", filepath)
+        image.save(filepath)
+
         model_image = image.resize(224,224)
         # preprocess
         input_tensor = preprocess(model_image)
@@ -137,8 +141,6 @@ def take_photo():
         for idx, val in top[:10]:
             print(f"{val.item()*100:.2f}% {classes[idx]}")
 
-        # request.save("main", filepath)
-        image.save(filepath)
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
         
