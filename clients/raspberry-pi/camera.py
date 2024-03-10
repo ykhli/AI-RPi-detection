@@ -146,7 +146,7 @@ def take_photo():
         top = list(enumerate(output[0].softmax(dim=0)))
         top.sort(key=lambda x: x[1], reverse=True)
         for idx, val in top[:10]:
-            print(f"{val.item()*100:.2f}% {classes[idx][1]}")
+            print(f"{val.item()*100:.2f}% {classes[idx]}")
         # save to Tigris bucket
         # try: 
         #     svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
