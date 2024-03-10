@@ -41,7 +41,7 @@ IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 classes =  {}
-with open("imagenet1000_clsidx_to_labels.json", "wb") as json_file: 
+with open("imagenet1000_clsidx_to_labels.json") as json_file: 
     classes = json.load(json_file)
 # openAI = OpenAI()
 
