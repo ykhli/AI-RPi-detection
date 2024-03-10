@@ -9,7 +9,7 @@ import numpy as np
 # from elevenlabs import generate, play, set_api_key, voices
 import boto3
 from dotenv import load_dotenv
-
+import json
 import torch
 from torchvision import models, transforms
 
@@ -40,7 +40,9 @@ os.makedirs(save_dir, exist_ok=True)
 IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
-
+classes =  {}
+with open("imagenet1000_clsidx_to_labels.json", "wb") as json_file: 
+    classes = json.load(json_file)
 # openAI = OpenAI()
 
 picam2 = Picamera2()
