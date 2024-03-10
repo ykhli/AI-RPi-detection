@@ -23,7 +23,7 @@ preprocess = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-net = models.quantization.mobilenet_v2(pretrained=True, quantize=True)
+net = models.quantization.mobilenet_v3_large(pretrained=True, quantize=True)
 # jit model to take it from ~20fps to ~30fps
 net = torch.jit.script(net)
 
@@ -126,7 +126,7 @@ def take_photo():
         static_dir = os.path.join(current_dir, save_dir)
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
-        image = request.make_image("main")
+        image = request.make_image("main").rotate(180)
 
         # request.save("main", filepath)
         image.save(filepath)
@@ -134,7 +134,7 @@ def take_photo():
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
 
-        model_image = image.resize(size).rotate(180).convert('RGB')
+        model_image = image.resize(size).convert('RGB')
         # preprocess
         input_tensor = preprocess(model_image)
 
