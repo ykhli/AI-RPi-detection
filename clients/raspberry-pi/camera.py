@@ -129,7 +129,7 @@ def take_photo():
         # request.save("main", filepath)
         image.save(filepath)
 
-        model_image = image.resize(size)
+        model_image = image.resize(size).convert('RGB')
         # preprocess
         input_tensor = preprocess(model_image)
 
