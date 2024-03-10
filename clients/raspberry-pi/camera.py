@@ -6,7 +6,7 @@ from openai import OpenAI
 import base64
 import cv2
 import numpy as np
-from elevenlabs import generate, play, set_api_key, voices
+# from elevenlabs import generate, play, set_api_key, voices
 import boto3
 from dotenv import load_dotenv
 
@@ -28,14 +28,14 @@ net = torch.jit.script(net)
 
 
 # Create S3 service client
-svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
+# svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
 
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
 save_dir = os.path.join(os.getcwd(), save_location)
 os.makedirs(save_dir, exist_ok=True)
-set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
+# set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
 IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
@@ -46,18 +46,18 @@ picam2 = Picamera2()
 picam2.start()
 time.sleep(2)
 
-def play_audio(text):
-    audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
+# def play_audio(text):
+#     audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
 
-    unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
-    dir_path = os.path.join("narration", unique_id)
-    os.makedirs(dir_path, exist_ok=True)
-    file_path = os.path.join(dir_path, "audio.wav")
+#     unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
+#     dir_path = os.path.join("narration", unique_id)
+#     os.makedirs(dir_path, exist_ok=True)
+#     file_path = os.path.join(dir_path, "audio.wav")
 
-    with open(file_path, "wb") as f:
-        f.write(audio)
+#     with open(file_path, "wb") as f:
+#         f.write(audio)
 
-    play(audio)
+#     play(audio)
 
 
 def describe_image(base64_images, context):
@@ -163,10 +163,10 @@ def save_image_collage(base64_images):
     file_path = os.path.join(save_dir, file_name)
     cv2.imwrite(file_path, collage)
     # save to Tigris bucket
-    try: 
-        svc.upload_file(file_path, BUCKET_NAME, "collage/"+file_name)
-    except Exception as e:
-        logging.error(f"Error uploading {file_name} to Tigris: {e}")
+    # try: 
+    #     svc.upload_file(file_path, BUCKET_NAME, "collage/"+file_name)
+    # except Exception as e:
+    #     logging.error(f"Error uploading {file_name} to Tigris: {e}")
     logging.info(f"Collage saved successfully. Path: {file_path}")
 
 def main():
