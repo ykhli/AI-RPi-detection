@@ -142,13 +142,13 @@ def take_photo():
         input_batch = input_tensor.unsqueeze(0)
 
         output = net(input_batch)
-        logging.info(output)
+        # logging.info(output)
         top = list(enumerate(output[0].softmax(dim=0)))
-        logging.info(f"printing top {top}")
+        # logging.info(f"printing top {top}")
         top.sort(key=lambda x: x[1], reverse=True)
-        logging.info(f"printing sorted top {top}")
+        # logging.info(f"printing sorted top {top}")
         for idx, val in top[:10]:
-            print(f"{val.item()*100:.2f}% {classes[idx]}")
+            print(f"{val.item()*100:.2f}% {classes[str(idx)]}")
         # save to Tigris bucket
         # try: 
         #     svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
