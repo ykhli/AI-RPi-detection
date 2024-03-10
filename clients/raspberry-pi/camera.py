@@ -16,6 +16,7 @@ from torchvision import models, transforms
 load_dotenv()
 
 torch.backends.quantized.engine = 'qnnpack'
+size = 224, 224
 
 preprocess = transforms.Compose([
     transforms.ToTensor(),
@@ -128,7 +129,7 @@ def take_photo():
         # request.save("main", filepath)
         image.save(filepath)
 
-        model_image = image.resize(224,224)
+        model_image = image.resize(size)
         # preprocess
         input_tensor = preprocess(model_image)
 
