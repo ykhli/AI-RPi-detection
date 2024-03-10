@@ -41,7 +41,7 @@ IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 classes =  {}
-with open("imagenet1000_clsidx_to_labels.json") as json_file: 
+with open("imagenet_class_index.json") as json_file: 
     classes = json.load(json_file)
 # openAI = OpenAI()
 
@@ -142,7 +142,7 @@ def take_photo():
         top = list(enumerate(output[0].softmax(dim=0)))
         top.sort(key=lambda x: x[1], reverse=True)
         for idx, val in top[:10]:
-            print(f"{val.item()*100:.2f}% {classes[idx]}")
+            print(f"{val.item()*100:.2f}% {classes[idx][1]}")
 
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
