@@ -16,7 +16,6 @@ from torchvision import models, transforms
 load_dotenv()
 
 torch.backends.quantized.engine = 'qnnpack'
-size = 224, 224
 
 # preprocess = transforms.Compose([
 #     transforms.ToTensor(),
@@ -31,6 +30,7 @@ weights = models.ResNeXt101_32X8D_Weights.DEFAULT
 preprocess = weights.transforms()
 model = models.resnext101_32x8d(weights=weights)
 model.eval()
+model_input_size = 224, 224
 interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy"]
 
 # Create S3 service client
@@ -123,7 +123,7 @@ def encode_image(image_path):
 
 # image from PIL
 def is_interesting(image):
-    model_image = image.resize(size).convert('RGB')
+    model_image = image.resize(model_input_size).convert('RGB')
     # preprocess
     input_tensor = preprocess(model_image)
 
