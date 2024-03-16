@@ -18,15 +18,20 @@ load_dotenv()
 torch.backends.quantized.engine = 'qnnpack'
 size = 224, 224
 
-preprocess = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
-
-net = models.quantization.mobilenet_v3_large(pretrained=True, quantize=True)
+# preprocess = transforms.Compose([
+#     transforms.ToTensor(),
+#     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+# ])
+# net = models.quantization.mobilenet_v3_large(pretrained=True, quantize=True)
 # jit model to take it from ~20fps to ~30fps
-net = torch.jit.script(net)
+# net = torch.jit.script(net)
 
+# Load model into memory and prep weights
+weights = models.ResNeXt101_32X8D_Weights.DEFAULT
+preprocess = weights.transforms()
+model = models.resnext101_32x8d(weights=weights)
+model.eval()
+interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy"]
 
 # Create S3 service client
 # svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
@@ -116,6 +121,41 @@ def encode_image(image_path):
             # File is being written to, wait a bit and retry
             time.sleep(0.1)
 
+# image from PIL
+def is_interesting(image):
+    model_image = image.resize(size).convert('RGB')
+    # preprocess
+    input_tensor = preprocess(model_image)
+
+    # create a mini-batch as expected by the model
+    input_batch = input_tensor.unsqueeze(0)
+
+    # output = net(input_batch)
+    prediction = model(input_batch)
+
+    # top = list(enumerate(output[0].softmax(dim=0)))    
+    # top.sort(key=lambda x: x[1], reverse=True)
+    # for idx, val in top[:10]:
+    #     print(f"{val.item()*100:.2f}% {classes[str(idx)]}")
+
+    # label = prediction.argmax().item()
+    # score = prediction[label].item()
+    # category_name = weights.meta['categories'][label]
+    # print(f"{category_name}: {100 * score}%")
+
+
+    top = list(enumerate(prediction[0].softmax(dim=0)))    
+    top.sort(key=lambda x: x[1], reverse=True)
+
+    result = ""
+    top_categories = []
+    for idx, val in top[:10]:
+        result_str = f"{val.item()*100:.2f}% {weights.meta['categories'][idx]}"
+        top_categories.append(weights.meta['categories'][idx])
+        result = result + (result_str + "\n")
+        print(result_str)
+
+    return any(x in interesting_array for x in top_categories), result
 
 def take_photo():
     global picam2
@@ -134,21 +174,12 @@ def take_photo():
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
 
-        model_image = image.resize(size).convert('RGB')
-        # preprocess
-        input_tensor = preprocess(model_image)
+        interesting, result = is_interesting(image)
+        if interesting:
+            # Do something. Save to bucket?
+            logging.info("interesting")    
 
-        # create a mini-batch as expected by the model
-        input_batch = input_tensor.unsqueeze(0)
 
-        output = net(input_batch)
-        # logging.info(output)
-        top = list(enumerate(output[0].softmax(dim=0)))
-        # logging.info(f"printing top {top}")
-        top.sort(key=lambda x: x[1], reverse=True)
-        # logging.info(f"printing sorted top {top}")
-        for idx, val in top[:10]:
-            print(f"{val.item()*100:.2f}% {classes[str(idx)]}")
         # save to Tigris bucket
         # try: 
         #     svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
