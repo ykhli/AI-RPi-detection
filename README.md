@@ -13,7 +13,7 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 
 ## Stack
 - 🧠 Multi-modal models: OpenAI
-- 📫 Notification: [Resend](https://resend.com/overview)
+- 📫 Notification: [Resend](https://resend.com/)
 - 📢 Narration (optional): [ElevenLabs](https://elevenlabs.io/)
 - 🐱 Cats
 
