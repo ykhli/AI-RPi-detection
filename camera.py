@@ -7,12 +7,21 @@ import base64
 import cv2
 import numpy as np
 from elevenlabs import generate, play, set_api_key, voices
+from dotenv import load_dotenv
+import resend
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
 save_dir = os.path.join(os.getcwd(), save_location)
+USE_ELEVEN = False
 os.makedirs(save_dir, exist_ok=True)
-set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
+if (os.environ.get("ELEVEN_API_KEY") != None):
+    set_api_key(os.environ.get("ELEVEN_API_KEY"))
+    USE_ELEVEN = True
+resend.api_key = os.environ.get("RESEND_API_KEY")
+print(f"USE_ELEVEN: {USE_ELEVEN}")
 
 openAI = OpenAI()
 
@@ -21,17 +30,19 @@ picam2.start()
 time.sleep(2)
 
 def play_audio(text):
-    audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
+    try: 
+        audio = generate(text, voice=os.environ.get("ELEVEN_VOICE_ID"))
+        unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
+        dir_path = os.path.join("narration", unique_id)
+        os.makedirs(dir_path, exist_ok=True)
+        file_path = os.path.join(dir_path, "audio.wav")
 
-    unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
-    dir_path = os.path.join("narration", unique_id)
-    os.makedirs(dir_path, exist_ok=True)
-    file_path = os.path.join(dir_path, "audio.wav")
+        with open(file_path, "wb") as f:
+            f.write(audio)
 
-    with open(file_path, "wb") as f:
-        f.write(audio)
-
-    play(audio)
+        play(audio)
+    except Exception as e:
+        print(f"Error generating and playing audio: {e}")
 
 
 def describe_image(base64_images, context):
@@ -105,7 +116,6 @@ def take_photo():
         logging.error(f"Error capturing image: {e}")
 
 def save_image_collage(base64_images):
-        # Assuming base64Frames is populated as in your provided code
     montage = None
 
     for base64_frame in base64_images:
@@ -130,6 +140,19 @@ def save_image_collage(base64_images):
     file_path = os.path.join(save_dir, f"montage_{timestamp}.jpg")
     cv2.imwrite(file_path, montage)
     logging.info(f"Montage saved successfully. Path: {file_path}")
+    return file_path
+
+def send_email(text, filePath):
+    f = open(filePath, "rb").read()
+    params = {
+        "from": os.environ.get("FROM_EMAIL"),
+        "to": [os.environ.get("TO_EMAIL")],
+        "subject": "AI dection!",
+        "html": f"<strong>{text}</strong>",
+        "attachments": [{"content": list(f), "filename": "image.jpg"}],
+    }
+    email = resend.Emails.send(params)
+    logging.info(f"Email sending status: {email}")
 
 def main():
     context = []
@@ -142,9 +165,13 @@ def main():
             base64Frames.append(base64_image)
         else:
             aiResponse = describe_image(base64Frames, context)
-            save_image_collage(base64Frames)
+            collageFilePath = save_image_collage(base64Frames)
             logging.info(f"AI Response: {aiResponse}")
-            play_audio(aiResponse)
+            send_email(aiResponse, collageFilePath)
+            
+            ## TODO - play audio later
+            # if (USE_ELEVEN): 
+            #     play_audio(aiResponse)
             context = context + [{"role": "assistant", "content": aiResponse}]
             base64Frames = []
 
