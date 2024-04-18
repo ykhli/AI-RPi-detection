@@ -68,7 +68,9 @@ I can send you one if you are one of the first few lucky people to try this kit 
    Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
 **6. (Optional) Get ElevenLabs key**
+
    a. Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
+   
    b. Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
 
 
