@@ -25,6 +25,11 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 - 📢 Narration (optional): [ElevenLabs](https://elevenlabs.io/)
 - 🐱 Cats
 
+## Overview
+
+- 🚀 [Quickstart](#quickstart)
+- 💻 [Dev Environment](#dev-environment)
+
 ## Quickstart
 To try out this starter kit, you need a Raspberry Pi with a camera module, optional a speaker module depending on your use case.
 I can send you one if you are one of the first few lucky people to try this kit :). Discord DM me.
@@ -53,15 +58,20 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-4. Acquire OpenAI API key
+4. Get OpenAI API key
 
-   Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` environment variable.
+   Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` in the .env file
 
-5. Acquire Resend API key
-   Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` environment variable.
+5. Get Resend key
+   Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` in the .env file
    Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
-6. Run the program
+6. (Optional) Get ElevenLabs key
+- Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
+- Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
+
+
+7. Run the program
 ```
 python camera.py
 ```
