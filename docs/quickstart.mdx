@@ -1,0 +1,65 @@
+---
+title: 'Quickstart'
+icon: 'rocket-launch'
+description: 'To try out this starter kit, you need a Raspberry Pi with a camera module, optional a speaker module depending on your use case.'
+---
+
+I can send you one if you are one of the first few lucky people to try this kit :). Discord DM me.
+
+### 0. Set up your Raspberry Pi
+
+This kit has been tested on Raspberry Pi 4 and 5. If you just got your RPi, follow their [documentations](https://www.raspberrypi.com/documentation/computers/getting-started.html) to set it up.
+
+📷 You will also need a camera attached to the RPi to test this out. [This](https://www.adafruit.com/product/5657) is the most standard RPi camera, but any camera should work.
+📢 If you want to hear the narration, you will need to set up 11labs and attach a speaker to the RPi.
+
+### 1. Create and activate your venv
+
+```
+python -m venv --system-site-packages rpi-venv
+source rpi-venv/bin/activate
+```
+
+### 2. Install requirements
+
+```
+pip install -r requirements.txt
+```
+
+### 3. Create an .env file
+
+```
+cp .env.example .env
+```
+
+### 4. Get OpenAI API key
+
+Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` in the .env file
+
+### 5. Get Resend key
+
+Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` in the .env file
+
+Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
+
+### 6. (Optional) Get ElevenLabs key
+
+a. Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
+
+b. Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
+
+### 7. Run the program
+
+```
+python camera.py
+```
+
+The program will save all the pictures taken under /static folder.
+
+### 8. Update the prompt!
+
+You probably noticed that we have a default prompt in .env called `REQUEST_PROMPT` -- you can update this prompt and tell the AI model to detect other things! One example that worked for me is the following prompt -- I got a summary of what my cat was doing every minute.
+
+`"You are an AI assistant who can send emails based on what you see in the picture.
+   If you see a cat in the picture, send an email summarizing what it's doing. The email should include a description parameter, which is describing what the cat is doing.
+   For example, the description could be 'The cat is playing with a ball.'"`
