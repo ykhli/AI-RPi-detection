@@ -29,18 +29,53 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 To try out this starter kit, you need a Raspberry Pi with a camera module, optional a speaker module depending on your use case.
 I can send you one if you are one of the first few lucky people to try this kit :). Discord DM me.
 
-1. Create and activate your own venv
-   `python -m venv --system-site-packages rpi-venv`\
-   `source rpi-venv/bin/activate`
+0. Set up your Raspberry Pi
+This kit has been tested on Raspberry Pi 4 and 5. If you just got your RPi, follow their [documentations](https://www.raspberrypi.com/documentation/computers/getting-started.html) to set it up. 
 
-2. Install requirements\
-   `pip install -r requirements.txt`
+📷 You will also need a camera attached to the RPi to test this out. [This](https://www.adafruit.com/product/5657) is the most standard RPi camera, but any camera should work.
+📢 If you want to hear the narration, you will need to set up 11labs and attach a speaker to the RPi. 
 
-3. Acquire OpenAI API key
+1. Create and activate your venv
+```
+python -m venv --system-site-packages rpi-venv
+source rpi-venv/bin/activate
+```
+
+2. Install requirements
+```
+pip install -r requirements.txt
+```
+
+3. Create an .env file
+```
+cp .env.example .env
+```
+
+4. Acquire OpenAI API key
 
    Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` environment variable.
 
-4. Acquire Resend API key
+5. Acquire Resend API key
    Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` environment variable.
+   Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
-5. Run `python camera.py`
+6. Run the program
+```
+python camera.py
+```
+The program will save all the pictures taken under /static folder. 
+
+## Dev Environment 
+
+### SSH
+The easiest way to work with an RPi is to ssh into it and use it as if it's a server. For the latest RPi distribution, you could ssh into it by running 
+```
+ssh username@RPI_NAME
+```
+Both username and RPi name can be found when you first set up the RPi
+
+### Testing out code
+All you need to run this kit is `python camera.py` in a virtual environment. What I usually do is checking out the git repository on the RPi and test out functions from there. If I needed to change anything, I use vim to edit on cli.
+
+You could also choose to mount RPi as a folder on your local file system using something like [sshfs](https://github.com/libfuse/sshfs). This way you could edit the file on RPi as if it's a file local to your system using any editor of your choice. 
+
