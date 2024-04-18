@@ -65,6 +65,7 @@ I can send you one if you are one of the first few lucky people to try this kit 
 **5. Get Resend key**
 
    Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` in the .env file
+   
    Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
 **6. (Optional) Get ElevenLabs key**
