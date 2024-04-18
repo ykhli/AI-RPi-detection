@@ -9,6 +9,7 @@ import numpy as np
 from elevenlabs import generate, play, set_api_key, voices
 from dotenv import load_dotenv
 import resend
+import json
 
 load_dotenv()
 
@@ -28,6 +29,8 @@ openAI = OpenAI()
 picam2 = Picamera2()
 picam2.start()
 time.sleep(2)
+requestPrompt = os.environ.get("REQUEST_PROMPT")
+lastEmailTs = None
 
 def play_audio(text):
     try: 
@@ -45,26 +48,16 @@ def play_audio(text):
         print(f"Error generating and playing audio: {e}")
 
 
-def describe_image(base64_images, context):
+def describe_image(base64_images):
     # for testing
     logging.info(f"base64_images: {len(base64_images)}")
     response = openAI.chat.completions.create(
         model="gpt-4-vision-preview",
         messages=[
             {
-                "role": "system",
-                "content": """
-                You are an AI assistant that can help me describe images. Your responses are short and to the point.
-                Only return 1-2 sentences.
-                """,
-            },
-        ]
-        + context
-        + [
-            {
                 "role": "user",
                 "content": [
-                    "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
+                   requestPrompt, *map(lambda x: {"image": x, "resize": 768}, base64_images),
                     # {"type": "text", "text": "Describe this image"},
                     # {
                     #     "type": "image_url",
@@ -74,8 +67,30 @@ def describe_image(base64_images, context):
             },
         ],
         max_tokens=500,
+        tools=[{
+            "type": "function", 
+            "function": {
+                "name": "send_email",
+                "description": "send an email based on if a cat was detected in the response", 
+                "parameters": {
+                    "type": "object", 
+                    "properties": {
+                        "detected": {
+                            "type": "boolean",
+                            "description": "if a cat was detected in the response"
+                        },
+                        "description": {
+                            "type": "boolean",
+                            "description": "if a cat was detected in the response, the description given by the model"
+                        }
+                    },
+                    "required": ["detected", "description"]
+                }
+            }
+        }]
     )
-    return response.choices[0].message.content
+    print(response.choices[0].message)
+    return response.choices[0].message
 
 
 def capture_photo():
@@ -142,37 +157,53 @@ def save_image_collage(base64_images):
     logging.info(f"Montage saved successfully. Path: {file_path}")
     return file_path
 
-def send_email(text, filePath):
+def send_email(detected, description, filePath):
+    global lastEmailTs
+
+    if (detected == False):
+        return
     f = open(filePath, "rb").read()
     params = {
         "from": os.environ.get("FROM_EMAIL"),
         "to": [os.environ.get("TO_EMAIL")],
         "subject": "AI dection!",
-        "html": f"<strong>{text}</strong>",
+        "html": f"<strong>{description}</strong>",
         "attachments": [{"content": list(f), "filename": "image.jpg"}],
     }
     email = resend.Emails.send(params)
-    logging.info(f"Email sending status: {email}")
+    if (email['id']!=None):
+        lastEmailTs = datetime.now()
+    logging.info(f"Email sending status: {email}, {lastEmailTs}")
 
 def main():
-    context = []
     base64Frames = []
     numOfFrames = 5
+    availableFunctions = {"send_email": send_email}
+    global lastEmailTs
+
     while True:
         filePath = capture_photo()
         base64_image = encode_image(filePath)
         if len(base64Frames) < numOfFrames:
             base64Frames.append(base64_image)
         else:
-            aiResponse = describe_image(base64Frames, context)
             collageFilePath = save_image_collage(base64Frames)
-            logging.info(f"AI Response: {aiResponse}")
-            send_email(aiResponse, collageFilePath)
-            
+            aiResponse = describe_image(base64Frames)
+            if (aiResponse.tool_calls):
+                for tool_call in aiResponse.tool_calls:
+                    try:
+                        print(tool_call.function)
+                        args = json.loads(tool_call.function.arguments)
+                        print('lastEmailTs', lastEmailTs)
+                        if (lastEmailTs == None or (datetime.now() - lastEmailTs).seconds > 60):
+                            extra_param = {"filePath": collageFilePath}
+                            availableFunctions[tool_call.function.name](**args, **extra_param)
+                    except Exception as e:
+                        print(f"An error occurred while calling the function: {e}")
+
             ## TODO - play audio later
             # if (USE_ELEVEN): 
             #     play_audio(aiResponse)
-            context = context + [{"role": "assistant", "content": aiResponse}]
             base64Frames = []
 
         time.sleep(2)
