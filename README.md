@@ -43,20 +43,20 @@ I can send you one if you are one of the first few lucky people to try this kit 
    📢 If you want to hear the narration, you will need to set up 11labs and attach a speaker to the RPi. 
 
 1. Create and activate your venv
-```
-python -m venv --system-site-packages rpi-venv
-source rpi-venv/bin/activate
-```
+   ```
+   python -m venv --system-site-packages rpi-venv
+   source rpi-venv/bin/activate
+   ```
 
 2. Install requirements
-```
-pip install -r requirements.txt
-```
+   ```
+   pip install -r requirements.txt
+   ```
 
 3. Create an .env file
-```
-cp .env.example .env
-```
+   ```
+   cp .env.example .env
+   ```
 
 4. Get OpenAI API key
 
@@ -67,16 +67,28 @@ cp .env.example .env
    Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
 6. (Optional) Get ElevenLabs key
-- Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
-- Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
+   - Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
+   - Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
 
 
 7. Run the program
-```
-python camera.py
-```
-The program will save all the pictures taken under /static folder. 
+   ```
+   python camera.py
+   ```
+   The program will save all the pictures taken under /static folder. 
 
+8. Update the prompt!
+
+   You probably noticed that we have a default prompt in .env called `REQUEST_PROMPT` -- you can update this prompt and tell the AI model to detect other things! One example that worked for me is the following prompt -- I got a summary of what my cat was doing every minute.
+
+   `
+   "You are an AI assistant who can send emails based on what you see in the picture.
+   If you see a cat in the picture, send an email summarizing what it's doing. The email should include a description parameter, which is describing what the cat is doing.
+   For example, the description could be 'The cat is playing with a ball.'"
+   `
+
+   
+   
 ## Dev Environment 
 
 ### SSH
