@@ -30,10 +30,12 @@ To try out this starter kit, you need a Raspberry Pi with a camera module, optio
 I can send you one if you are one of the first few lucky people to try this kit :). Discord DM me.
 
 0. Set up your Raspberry Pi
-This kit has been tested on Raspberry Pi 4 and 5. If you just got your RPi, follow their [documentations](https://www.raspberrypi.com/documentation/computers/getting-started.html) to set it up. 
 
-📷 You will also need a camera attached to the RPi to test this out. [This](https://www.adafruit.com/product/5657) is the most standard RPi camera, but any camera should work.
-📢 If you want to hear the narration, you will need to set up 11labs and attach a speaker to the RPi. 
+   This kit has been tested on Raspberry Pi 4 and 5. If you just got your RPi, follow their [documentations](https://www.raspberrypi.com/documentation/computers/getting-started.html) to set it up. 
+
+
+   📷 You will also need a camera attached to the RPi to test this out. [This](https://www.adafruit.com/product/5657) is the most standard RPi camera, but any camera should work.
+   📢 If you want to hear the narration, you will need to set up 11labs and attach a speaker to the RPi. 
 
 1. Create and activate your venv
 ```
