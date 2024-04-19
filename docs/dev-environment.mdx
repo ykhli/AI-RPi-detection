@@ -1,0 +1,20 @@
+---
+title: 'Dev Environment'
+icon: 'terminal'
+---
+
+### SSH
+
+The easiest way to work with an RPi is to ssh into it and use it as if it's a server. For the latest RPi distribution, you could ssh into it by running
+
+```
+ssh username@RPI_NAME
+```
+
+Both username and RPi name can be found when you first set up the RPi
+
+### Testing out code
+
+All you need to run this kit is `python camera.py` in a virtual environment. What I usually do is checking out the git repository on the RPi and test out functions from there. If I needed to change anything, I use vim to edit on cli.
+
+You could also choose to mount RPi as a folder on your local file system using something like [sshfs](https://github.com/libfuse/sshfs). This way you could edit the file on RPi as if it's a file local to your system using any editor of your choice.

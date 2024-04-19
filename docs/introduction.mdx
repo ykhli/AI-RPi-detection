@@ -1,0 +1,119 @@
+---
+title: AI Raspberry Pi Cat Detection
+sidebarTitle: Introduction
+icon: hand-wave
+description: A hardware AI starter kit for cat detection and narration .... on your Raspberry Pi!
+---
+
+### Demo
+
+sound on 🔊
+
+<Frame>
+  <video controls autoPlay loop>
+    <source src="/assets/demo.mp4" type="video/mp4" />
+  </video>
+</Frame>
+
+This starter kit is super simple: it allows you to use your Raspberry Pi to monitor what your cat does at home, and email you when your cat does something it's not supposed to do. My #1 use case is detecting if my cats are jumping on my dinning table or kitchen counter. You could also opt to turn this into an AI narrator, where the voice narrates on everything it sees.
+
+Of course this doesn't just work for cats 😄. You are welcomed to simply change the prompts and do other kinds of detections:
+
+<Card title="Bird watching" icon="crow">
+  Email a summary of what birds came by during the day, for the birdies
+</Card>
+
+<Card title="Recoon deterrent" icon="raccoon">
+  Play loud sound when AI sees Racoons going through your trash cans. You need
+  an external speaker attached to your RPi if you want to do this.
+</Card>
+
+<Card title="Plant monitor" icon="raccoon">
+  Email you when your plants are dying from not being watered
+</Card>
+
+<Card title="Package alert" icon="box">
+  Email when there's a new package delivered at the door, even better, AI can
+  tell you if it's a big one
+</Card>
+
+<Card
+  title="Submit your fun use cases"
+  icon="envelope"
+  href="mailto:yli@a16z.com"
+>
+  Email us!
+</Card>
+
+## Stack
+
+<Card
+  title="OpenAI"
+  icon={
+    <svg
+      className="h-6 w-6 fill-primary dark:fill-primary-light"
+      fill="#000000"
+      width="800px"
+      height="800px"
+      viewBox="0 0 24 24"
+      role="img"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
+    </svg>
+  }
+  href="https://openai.com"
+>
+  For multi-modal models
+</Card>
+
+<Card
+  title="Resend"
+  icon={
+    <svg
+      className="h-5 w-5 fill-primary dark:fill-primary-light"
+      width="244"
+      height="294"
+      viewBox="0 0 244 294"
+      fill="none"
+    >
+      <path d="M0 293.471V0H132.062C150.788 0 167.697 4.05301 182.79 12.158C198.163 20.263 210.181 31.443 218.845 45.698C227.51 59.672 231.842 75.604 231.842 93.491C231.842 111.938 227.51 128.568 218.845 143.381C210.181 157.915 198.302 169.375 183.209 177.759C168.117 186.144 151.067 190.337 132.062 190.337H67.917V293.471H0ZM162.667 293.471L88.041 160.99L160.99 150.509L244 293.471H162.667ZM67.917 135.835H125.773C133.04 135.835 139.329 134.298 144.639 131.223C150.229 127.869 154.421 123.258 157.216 117.388C160.291 111.519 161.828 104.811 161.828 97.265C161.828 89.718 160.151 83.15 156.797 77.56C153.443 71.691 148.552 67.219 142.124 64.144C135.975 61.07 128.428 59.533 119.484 59.533H67.917V135.835Z" />
+    </svg>
+  }
+  href="https://resend.com"
+>
+  For notifications
+</Card>
+
+<Card
+  title="ElevenLabs"
+  icon={
+    <svg
+      className="h-5 w-5 fill-primary dark:fill-primary-light"
+      width="69"
+      height="127"
+      viewBox="0 0 69 127"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="23" height="127" />
+      <rect x="46" width="23" height="127" />
+    </svg>
+  }
+  href="https://elevenlabs.io"
+>
+  For narration (optional)
+</Card>
+<Card title="Cats" icon="cat">
+  Not included in the repo
+</Card>
+
+## Learn more
+
+<Card title="Quickstart" icon="rocket-launch" href="/quickstart">
+  How to get started
+</Card>
+
+<Card title="Dev Environment" icon="terminal" href="/quickstart">
+  How to set up your dev environment
+</Card>
