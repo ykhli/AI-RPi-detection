@@ -15,6 +15,9 @@ load_dotenv()
 USE_LOCAL_MODEL = False
 print(f"USE_LOCAL_MODEL: {USE_LOCAL_MODEL}")
 if USE_LOCAL_MODEL: 
+    print(f"Loading local model to memory")
+    # Start the timer
+    start_time = time.time()
     # Load the model and libraries if we're using it
     import torch
     from torchvision import models
@@ -26,6 +29,11 @@ if USE_LOCAL_MODEL:
     model = models.resnext101_32x8d(weights=weights)
     model.eval()
     model_input_size = 224, 224
+
+    # End the timer
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Loaded local model to memory in {execution_time} seconds")
 interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy", "tabby"]
 
 logging.basicConfig(level=logging.INFO) 
