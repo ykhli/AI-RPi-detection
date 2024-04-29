@@ -69,7 +69,7 @@ animals = [
     "Great Pyrenees", "Chihuahua", "Labrador retriever", "Samoyed", "Samoyede", "bluetick", "kelpie",
     "miniature pinscher", "Italian greyhound", "cocker spaniel", "English cocker spaniel", "cocker",
     "Sussex spaniel", "Pembroke", "Pembroke Welsh corgi", "Blenheim spaniel", "Ibizan hound", "Ibizan Podenco",
-    "English foxhound", "briard", "Border terrier"]
+    "English foxhound", "briard", "Border terrier", "tabby"]
 
 interesting_array = animals
 
