@@ -1,4 +1,3 @@
-
 from picamera2 import Picamera2, Preview
 import time, os, logging
 from datetime import datetime
@@ -10,20 +9,24 @@ from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
-import torch
-from torchvision import models, transforms
 
 load_dotenv()
 
-torch.backends.quantized.engine = 'qnnpack'
+USE_LOCAL_MODEL = False
+print(f"USE_LOCAL_MODEL: {USE_LOCAL_MODEL}")
+if USE_LOCAL_MODEL: 
+    # Load the model and libraries if we're using it
+    import torch
+    from torchvision import models
+    torch.backends.quantized.engine = 'qnnpack'
 
-# Load model into memory and prep weights
-weights = models.ResNeXt101_32X8D_Weights.DEFAULT
-preprocess = weights.transforms()
-model = models.resnext101_32x8d(weights=weights)
-model.eval()
-model_input_size = 224, 224
-interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy"]
+    # Load model into memory and prep weights
+    weights = models.ResNeXt101_32X8D_Weights.DEFAULT
+    preprocess = weights.transforms()
+    model = models.resnext101_32x8d(weights=weights)
+    model.eval()
+    model_input_size = 224, 224
+interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy", "tabby"]
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
@@ -101,15 +104,6 @@ def describe_image(base64_images):
     )
     print("response:", response.choices[0].message)
     return response.choices[0].message
-
-
-def capture_photo():
-    try:
-        filePath = take_photo()  # Call your take_photo function
-        logging.info("Image captured sauccessfully")
-        return filePath
-    except Exception as e:
-        return e
     
 def encode_image(image_path):
     while True:
@@ -125,6 +119,9 @@ def encode_image(image_path):
 
 # image from PIL
 def is_interesting(image):
+    # Everything is interesting if we're not using the model
+    if not USE_LOCAL_MODEL:
+        return True, "Everything is awesome"
     model_image = image.resize(model_input_size).convert('RGB')
     # preprocess
     input_tensor = preprocess(model_image)
@@ -165,12 +162,7 @@ def take_photo():
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
 
-        interesting, result = is_interesting(image)
-        if interesting:
-            # Do something. Save to bucket?
-            logging.info("interesting")    
-
-        return filepath
+        return filepath, image
     except Exception as e:
         logging.error(f"Error capturing image: {e}")
 
@@ -224,13 +216,25 @@ def main():
     numOfFrames = 5
     availableFunctions = {"send_email": send_email}
     global lastEmailTs
+    captureMode = False
 
     while True:
-        filePath = capture_photo()
+        filePath, image = take_photo()
+        if not captureMode:
+            interestingBool, objects_detected = is_interesting(image)
+            if interestingBool:
+                captureMode = True
+                print(f"Interesting image detected: {objects_detected}")
+            else:
+                print("Not interesting")
+                continue
+
         base64_image = encode_image(filePath)
         if len(base64Frames) < numOfFrames:
             base64Frames.append(base64_image)
         else:
+            # We got enough frames, let's process them
+            captureMode = False 
             collageFilePath = save_image_collage(base64Frames)
             aiResponse = describe_image(base64Frames)
             if (aiResponse.tool_calls):
