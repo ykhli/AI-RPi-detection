@@ -10,8 +10,20 @@ from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
+import torch
+from torchvision import models, transforms
 
 load_dotenv()
+
+torch.backends.quantized.engine = 'qnnpack'
+
+# Load model into memory and prep weights
+weights = models.ResNeXt101_32X8D_Weights.DEFAULT
+preprocess = weights.transforms()
+model = models.resnext101_32x8d(weights=weights)
+model.eval()
+model_input_size = 224, 224
+interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy"]
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
@@ -111,6 +123,41 @@ def encode_image(image_path):
             # File is being written to, wait a bit and retry
             time.sleep(0.1)
 
+# image from PIL
+def is_interesting(image):
+    model_image = image.resize(model_input_size).convert('RGB')
+    # preprocess
+    input_tensor = preprocess(model_image)
+
+    # create a mini-batch as expected by the model
+    input_batch = input_tensor.unsqueeze(0)
+
+    # output = net(input_batch)
+    prediction = model(input_batch)
+
+    # top = list(enumerate(output[0].softmax(dim=0)))    
+    # top.sort(key=lambda x: x[1], reverse=True)
+    # for idx, val in top[:10]:
+    #     print(f"{val.item()*100:.2f}% {classes[str(idx)]}")
+
+    # label = prediction.argmax().item()
+    # score = prediction[label].item()
+    # category_name = weights.meta['categories'][label]
+    # print(f"{category_name}: {100 * score}%")
+
+
+    top = list(enumerate(prediction[0].softmax(dim=0)))    
+    top.sort(key=lambda x: x[1], reverse=True)
+
+    result = ""
+    top_categories = []
+    for idx, val in top[:10]:
+        result_str = f"{val.item()*100:.2f}% {weights.meta['categories'][idx]}"
+        top_categories.append(weights.meta['categories'][idx])
+        result = result + (result_str + "\n")
+        print(result_str)
+
+    return any(x in interesting_array for x in top_categories), result
 
 def take_photo():
     global picam2
@@ -121,9 +168,19 @@ def take_photo():
         static_dir = os.path.join(current_dir, save_dir)
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
-        request.save("main", filepath)
+        image = request.make_image("main").rotate(180)
+
+        # request.save("main", filepath)
+        image.save(filepath)
+
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
+
+        interesting, result = is_interesting(image)
+        if interesting:
+            # Do something. Save to bucket?
+            logging.info("interesting")    
+
         return filepath
     except Exception as e:
         logging.error(f"Error capturing image: {e}")
