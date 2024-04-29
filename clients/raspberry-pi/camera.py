@@ -6,7 +6,7 @@ from openai import OpenAI
 import base64
 import cv2
 import numpy as np
-# from elevenlabs import generate, play, set_api_key, voices
+from elevenlabs import generate, play, set_api_key, voices
 import boto3
 from dotenv import load_dotenv
 import json
@@ -17,13 +17,6 @@ load_dotenv()
 
 torch.backends.quantized.engine = 'qnnpack'
 
-# preprocess = transforms.Compose([
-#     transforms.ToTensor(),
-#     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-# ])
-# net = models.quantization.mobilenet_v3_large(pretrained=True, quantize=True)
-# jit model to take it from ~20fps to ~30fps
-# net = torch.jit.script(net)
 
 # Load model into memory and prep weights
 weights = models.ResNeXt101_32X8D_Weights.DEFAULT
@@ -34,71 +27,71 @@ model_input_size = 224, 224
 interesting_array = ["cat", "Persian_cat", "Siamese_cat", "Egyptian_cat", "tiger_cat", "teddy"]
 
 # Create S3 service client
-# svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
+svc = boto3.client('s3', endpoint_url='https://fly.storage.tigris.dev')
 
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
 save_dir = os.path.join(os.getcwd(), save_location)
 os.makedirs(save_dir, exist_ok=True)
-# set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
+set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
 IMAGE_CAPTURE_INTERVAL = 2
 COLLAGE_FRAMES = 5
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 classes =  {}
 with open("imagenet_class_index.json") as json_file: 
     classes = json.load(json_file)
-# openAI = OpenAI()
+openAI = OpenAI()
 
 picam2 = Picamera2()
 picam2.start()
 time.sleep(2)
 
-# def play_audio(text):
-#     audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
+def play_audio(text):
+    audio = generate(text, voice=os.environ.get("ELEVENLABS_VOICE_ID"))
 
-#     unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
-#     dir_path = os.path.join("narration", unique_id)
-#     os.makedirs(dir_path, exist_ok=True)
-#     file_path = os.path.join(dir_path, "audio.wav")
+    unique_id = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8").rstrip("=")
+    dir_path = os.path.join("narration", unique_id)
+    os.makedirs(dir_path, exist_ok=True)
+    file_path = os.path.join(dir_path, "audio.wav")
 
-#     with open(file_path, "wb") as f:
-#         f.write(audio)
+    with open(file_path, "wb") as f:
+        f.write(audio)
 
-#     play(audio)
+    play(audio)
 
 
-# def describe_image(base64_images, context):
-#     # for testing
-#     logging.info(f"base64_images: {len(base64_images)}")
-#     response = openAI.chat.completions.create(
-#         model="gpt-4-vision-preview",
-#         messages=[
-#             {
-#                 "role": "system",
-#                 "content": """
-#                 You are an AI assistant that can help me describe images. Your responses are short and to the point.
-#                 Only return 1-2 sentences.
-#                 """,
-#             },
-#         ]
-#         + context
-#         + [
-#             {
-#                 "role": "user",
-#                 "content": [
-#                     "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
-#                     # {"type": "text", "text": "Describe this image"},
-#                     # {
-#                     #     "type": "image_url",
-#                     #     "image_url": f"data:image/jpeg;base64,{base64_image}",
-#                     # },
-#                 ],
-#             },
-#         ],
-#         max_tokens=500,
-#     )
-#     return response.choices[0].message.content
+def describe_image(base64_images, context):
+    # for testing
+    logging.info(f"base64_images: {len(base64_images)}")
+    response = openAI.chat.completions.create(
+        model="gpt-4-vision-preview",
+        messages=[
+            {
+                "role": "system",
+                "content": """
+                You are an AI assistant that can help me describe images. Your responses are short and to the point.
+                Only return 1-2 sentences.
+                """,
+            },
+        ]
+        + context
+        + [
+            {
+                "role": "user",
+                "content": [
+                    "These are frames a camera stream consist of one to many pictures. Generate a compelling description of the image or a sequence of images: ", *map(lambda x: {"image": x, "resize": 768}, base64_images),
+                    # {"type": "text", "text": "Describe this image"},
+                    # {
+                    #     "type": "image_url",
+                    #     "image_url": f"data:image/jpeg;base64,{base64_image}",
+                    # },
+                ],
+            },
+        ],
+        max_tokens=500,
+    )
+    return response.choices[0].message.content
 
 
 def capture_photo():
@@ -181,10 +174,10 @@ def take_photo():
 
 
         # save to Tigris bucket
-        # try: 
-        #     svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
-        # except Exception as e:
-        #     logging.error(f"Error uploading {image_name} to Tigris: {e}")
+        try: 
+            svc.upload_file(filepath, BUCKET_NAME, "raw/" + image_name)
+        except Exception as e:
+            logging.error(f"Error uploading {image_name} to Tigris: {e}")
             
         return filepath
     except Exception as e:
@@ -214,10 +207,10 @@ def save_image_collage(base64_images):
     file_path = os.path.join(save_dir, file_name)
     cv2.imwrite(file_path, collage)
     # save to Tigris bucket
-    # try: 
-    #     svc.upload_file(file_path, BUCKET_NAME, "collage/"+file_name)
-    # except Exception as e:
-    #     logging.error(f"Error uploading {file_name} to Tigris: {e}")
+    try: 
+        svc.upload_file(file_path, BUCKET_NAME, "collage/"+file_name)
+    except Exception as e:
+        logging.error(f"Error uploading {file_name} to Tigris: {e}")
     logging.info(f"Collage saved successfully. Path: {file_path}")
 
 def main():
