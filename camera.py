@@ -6,7 +6,7 @@ from openai import OpenAI
 import base64
 import cv2
 import numpy as np
-from elevenlabs import generate, play, set_api_key, voices
+from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
@@ -40,9 +40,7 @@ def play_audio(text):
         os.makedirs(dir_path, exist_ok=True)
         file_path = os.path.join(dir_path, "audio.wav")
 
-        with open(file_path, "wb") as f:
-            f.write(audio)
-
+        save(audio, file_path)
         play(audio)
     except Exception as e:
         print(f"Error generating and playing audio: {e}")
@@ -89,7 +87,7 @@ def describe_image(base64_images):
             }
         }]
     )
-    print(response.choices[0].message)
+    print("response:", response.choices[0].message)
     return response.choices[0].message
 
 
@@ -201,9 +199,8 @@ def main():
                     except Exception as e:
                         print(f"An error occurred while calling the function: {e}")
 
-            ## TODO - play audio later
-            # if (USE_ELEVEN): 
-            #     play_audio(aiResponse)
+            if (USE_ELEVEN): 
+                play_audio(aiResponse.content)
             base64Frames = []
 
         time.sleep(2)
