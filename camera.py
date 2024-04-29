@@ -182,7 +182,7 @@ def is_interesting(image, filePath):
 
     result = ""
     top_categories = []
-    for idx, val in top[:10]:
+    for idx, val in top[:15]:
         result_str = f"{val.item()*100:.2f}% {weights.meta['categories'][idx]}"
         top_categories.append(weights.meta['categories'][idx])
         result = result + (result_str + "\n")
