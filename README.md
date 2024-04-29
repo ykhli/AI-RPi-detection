@@ -30,7 +30,8 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 
 ## Quickstart
 
-To try out this starter kit, you need a Raspberry Pi with a camera module, optional a speaker module depending on your use case.
+To try out this starter kit, you need a Raspberry Pi with a camera module, optionally a speaker module for narration!
+
 I can send you one if you are one of the first few lucky people to try this kit :). Discord DM me.
 
 For detailed setup instructions, visit our [Mintlify](https://mintlify.com/) docs page [here](https://ai-rpi-detection.mintlify.app/introduction).
