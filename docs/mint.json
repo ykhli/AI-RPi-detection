@@ -28,11 +28,7 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "dev-environment"
-      ]
+      "pages": ["introduction", "quickstart", "dev-environment", "demos"]
     }
   ],
   "footerSocials": {
