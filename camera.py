@@ -14,8 +14,8 @@ import json
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO) 
-save_location = os.environ.get("TMP_FILE_PATH") | 'static'
-save_base_path = os.environ.get("TMP_FILE_BASE_PATH") | "/tmp"
+save_location = os.environ.get("TMP_FILE_PATH", 'static')
+save_base_path = os.environ.get("TMP_FILE_BASE_PATH", "/tmp")
 save_dir = os.path.join(save_base_path, save_location)
 USE_ELEVEN = False
 os.makedirs(save_dir, exist_ok=True)
