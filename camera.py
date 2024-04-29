@@ -135,17 +135,6 @@ def is_interesting(image):
     # output = net(input_batch)
     prediction = model(input_batch)
 
-    # top = list(enumerate(output[0].softmax(dim=0)))    
-    # top.sort(key=lambda x: x[1], reverse=True)
-    # for idx, val in top[:10]:
-    #     print(f"{val.item()*100:.2f}% {classes[str(idx)]}")
-
-    # label = prediction.argmax().item()
-    # score = prediction[label].item()
-    # category_name = weights.meta['categories'][label]
-    # print(f"{category_name}: {100 * score}%")
-
-
     top = list(enumerate(prediction[0].softmax(dim=0)))    
     top.sort(key=lambda x: x[1], reverse=True)
 
@@ -168,7 +157,7 @@ def take_photo():
         static_dir = os.path.join(current_dir, save_dir)
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
-        image = request.make_image("main").rotate(180)
+        image = request.make_image("main")
 
         # request.save("main", filepath)
         image.save(filepath)
