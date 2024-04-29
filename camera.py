@@ -9,10 +9,11 @@ from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
+from exif import Image as ExifImage
 
 load_dotenv()
 
-USE_LOCAL_MODEL = False
+USE_LOCAL_MODEL = True
 print(f"USE_LOCAL_MODEL: {USE_LOCAL_MODEL}")
 if USE_LOCAL_MODEL: 
     print(f"Loading local model to memory")
@@ -126,7 +127,7 @@ def encode_image(image_path):
             time.sleep(0.1)
 
 # image from PIL
-def is_interesting(image):
+def is_interesting(image, filePath):
     # Everything is interesting if we're not using the model
     if not USE_LOCAL_MODEL:
         return True, "Everything is awesome"
@@ -151,6 +152,15 @@ def is_interesting(image):
         result = result + (result_str + "\n")
         print(result_str)
 
+    with open(filePath, "rb") as saved_image:
+        exif_image = ExifImage(saved_image)
+    
+    exif_image.user_comment = result
+
+    # this cases multiple writes for 1 image, not ideal
+    with open(filePath, 'wb') as new_image_file:
+        new_image_file.write(exif_image.get_file())
+    
     return any(x in interesting_array for x in top_categories), result
 
 def take_photo():
@@ -229,7 +239,7 @@ def main():
     while True:
         filePath, image = take_photo()
         if not captureMode:
-            interestingBool, objects_detected = is_interesting(image)
+            interestingBool, objects_detected = is_interesting(image, filePath)
             if interestingBool:
                 captureMode = True
                 print(f"Interesting image detected: {objects_detected}")
