@@ -13,7 +13,7 @@ from exif import Image as ExifImage
 
 load_dotenv()
 
-USE_LOCAL_MODEL = True
+USE_LOCAL_MODEL = os.environ.get("USE_LOCAL_MODEL", False)
 print(f"USE_LOCAL_MODEL: {USE_LOCAL_MODEL}")
 if USE_LOCAL_MODEL: 
     print(f"Loading local model to memory")
