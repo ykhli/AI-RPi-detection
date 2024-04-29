@@ -9,6 +9,7 @@ from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
+import interesting_list
 from exif import Image as ExifImage
 
 load_dotenv()
@@ -25,53 +26,18 @@ if USE_LOCAL_MODEL:
     torch.backends.quantized.engine = 'qnnpack'
 
     # Load model into memory and prep weights
-    weights = models.ResNeXt101_32X8D_Weights.DEFAULT
+    weights = models.Swin_V2_S_Weights.DEFAULT
     preprocess = weights.transforms()
-    model = models.resnext101_32x8d(weights=weights)
+    model = models.swin_v2_s(weights=weights)
     model.eval()
-    model_input_size = 224, 224
+    model_input_size = 640, 480
 
     # End the timer
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Loaded local model to memory in {execution_time} seconds")
 
-animals = [
-    "kit fox", "English setter", "Australian terrier", "grey whale", "lesser panda", "Egyptian cat",
-    "ibex", "Persian cat", "cougar", "gazelle", "porcupine", "sea lion", "badger", "Great Dane",
-    "Scottish deerhound", "killer whale", "mink", "African elephant", "red wolf", "jaguar", "hyena",
-    "titi monkey", "three-toed sloth", "sorrel", "black-footed ferret", "dalmatian", "Staffordshire bullterrier",
-    "Bouvier des Flandres", "weasel", "miniature poodle", "bighorn sheep", "fox squirrel", "colobus monkey",
-    "tiger cat", "impala", "coyote", "Yorkshire terrier", "Newfoundland dog", "red fox", "hartebeest", "grey fox",
-    "Pekinese", "guenon monkey", "mongoose", "indri", "tiger", "wild boar", "zebra", "ram", "orangutan", "basenji",
-    "leopard", "vizsla", "squirrel monkey", "Siamese cat", "chimpanzee", "komondor", "proboscis monkey",
-    "guinea pig", "white wolf", "polar bear", "gorilla", "ox", "Tibetan mastiff", "spider monkey", "Doberman",
-    "warthog", "Arabian camel", "siamang", "golden retriever", "Border collie", "hare", "boxer", "patas monkey",
-    "baboon", "macaque", "capuchin", "flat-coated retriever", "hog", "Eskimo dog", "Brittany spaniel",
-    "Gordon setter", "dingo", "hamster", "Arctic fox", "water buffalo", "American black bear", "Angora rabbit",
-    "bison", "howler monkey", "hippopotamus", "giant panda", "tabby cat", "marmoset", "Saint Bernard", "armadillo",
-    "redbone", "polecat", "marmot", "gibbon", "llama", "wood rabbit", "lion", "Irish setter", "dugong",
-    "Indian elephant", "beaver", "Madagascar cat", "Rhodesian ridgeback", "lynx", "African hunting dog", "langur",
-    "timber wolf", "cheetah", "sloth bear", "German shepherd", "otter", "koala", "tusker", "echidna",
-    "wallaby", "platypus", "wombat", "Siberian husky", "English springer", "malamute", "Walker hound",
-    "Welsh springer spaniel", "whippet", "Weimaraner", "soft-coated wheaten terrier", "Dandie Dinmont",
-    "Old English sheepdog", "otterhound", "bloodhound", "Airedale", "giant schnauzer", "black-and-tan coonhound",
-    "papillon", "Mexican hairless", "Cardigan Welsh corgi", "malinois", "Lhasa", "Norwegian elkhound", "Rottweiler",
-    "Saluki", "schipperke", "Brabancon griffon", "West Highland white terrier", "Sealyham terrier", "Irish wolfhound",
-    "EntleBucher", "French bulldog", "Bernese mountain dog", "Maltese dog", "Norfolk terrier", "toy terrier",
-    "cairn terrier", "groenendael", "clumber spaniel", "Afghan hound", "Japanese spaniel", "borzoi", "toy poodle",
-    "Kerry blue terrier", "Scotch terrier", "Boston bull", "Greater Swiss Mountain dog", "Appenzeller", "Shih-Tzu",
-    "Irish water spaniel", "Pomeranian", "Bedlington terrier", "miniature schnauzer", "collie", "Irish terrier",
-    "affenpinscher", "silky terrier", "beagle", "Leonberger", "German short-haired pointer", "dhole", "Chesapeake Bay retriever",
-    "bull mastiff", "kuvasz", "pug", "curly-coated retriever", "Norwich terrier", "keeshond",  "Lakeland terrier", "standard schnauzer", "Tibetan terrier", "chrysanthemum dog", "wire-haired fox terrier",
-    "basset", "basset hound", "chow", "chow chow", "American Staffordshire terrier", "Staffordshire terrier",
-    "American pit bull terrier", "pit bull terrier", "Shetland sheepdog", "Shetland sheep dog", "Shetland",
-    "Great Pyrenees", "Chihuahua", "Labrador retriever", "Samoyed", "Samoyede", "bluetick", "kelpie",
-    "miniature pinscher", "Italian greyhound", "cocker spaniel", "English cocker spaniel", "cocker",
-    "Sussex spaniel", "Pembroke", "Pembroke Welsh corgi", "Blenheim spaniel", "Ibizan hound", "Ibizan Podenco",
-    "English foxhound", "briard", "Border terrier", "tabby"]
-
-interesting_array = animals
+interesting_array = interesting_list.animals
 
 logging.basicConfig(level=logging.INFO) 
 save_location='static'
