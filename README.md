@@ -2,6 +2,8 @@
 
 AI Raspberry Pi cat detection and notification: get a text/email when your cat does something it's not supposed to do, and have AI narrate what it sees 👁️
 
+This RPi starter kit makes it easy to get started with AI (both running device model & calling an LLM), and it's generalizable across other vision-related use cases.
+
 **Demo** (sound on 🔊):
 
 [![AI cat detection demo](http://img.youtube.com/vi/8KSAiwyDoy8/0.jpg)](http://www.youtube.com/watch?v=8KSAiwyDoy8 "AI Cat Detection & Narration")
