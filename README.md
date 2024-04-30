@@ -21,6 +21,7 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 - 🧠 Multi-modal models: OpenAI
 - 📫 Notification: [Resend](https://resend.com/)
 - 📢 Narration (optional): [ElevenLabs](https://elevenlabs.io/)
+- 💻 Orchestration and function calling: [Langchain](https://python.langchain.com/docs/get_started/introduction/)
 - 🐱 Cats
 
 ## Overview
