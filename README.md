@@ -1,6 +1,6 @@
 ## AI Raspberry Pi Cat Detection 🐱
 
-A hardware AI starter kit for cat detection and narration .... on your Raspberry Pi! 🥧🍓
+AI Raspberry Pi cat detection and notification: get a text/email when your cat does something it's not supposed to do, and have AI narrate what it sees 👁️
 
 **Demo** (sound on 🔊):
 
