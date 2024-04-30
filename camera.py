@@ -1,4 +1,3 @@
-
 from picamera2 import Picamera2, Preview
 import time, os, logging
 from datetime import datetime
@@ -10,8 +9,35 @@ from elevenlabs import generate, play, set_api_key, save, voices
 from dotenv import load_dotenv
 import resend
 import json
+import interesting_list
+from exif import Image as ExifImage
 
 load_dotenv()
+
+USE_LOCAL_MODEL = os.environ.get("USE_LOCAL_MODEL", "False").lower() == "true"
+print(f"USE_LOCAL_MODEL: {USE_LOCAL_MODEL}")
+if USE_LOCAL_MODEL: 
+    print(f"Loading local model to memory")
+    # Start the timer
+    start_time = time.time()
+    # Load the model and libraries if we're using it
+    import torch
+    from torchvision import models
+    torch.backends.quantized.engine = 'qnnpack'
+
+    # Load model into memory and prep weights
+    weights = models.Swin_V2_S_Weights.DEFAULT
+    preprocess = weights.transforms()
+    model = models.swin_v2_s(weights=weights)
+    model.eval()
+    model_input_size = 640, 480
+
+    # End the timer
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Loaded local model to memory in {execution_time} seconds")
+
+interesting_array = interesting_list.animals
 
 logging.basicConfig(level=logging.INFO) 
 save_location = os.environ.get("TMP_FILE_PATH", 'static')
@@ -90,15 +116,6 @@ def describe_image(base64_images):
     )
     print("response:", response.choices[0].message)
     return response.choices[0].message
-
-
-def capture_photo():
-    try:
-        filePath = take_photo()  # Call your take_photo function
-        logging.info("Image captured sauccessfully")
-        return filePath
-    except Exception as e:
-        return e
     
 def encode_image(image_path):
     while True:
@@ -112,6 +129,42 @@ def encode_image(image_path):
             # File is being written to, wait a bit and retry
             time.sleep(0.1)
 
+# image from PIL
+def is_interesting(image, filePath):
+    # Everything is interesting if we're not using the model
+    if not USE_LOCAL_MODEL:
+        return True, "Everything is awesome"
+    model_image = image.resize(model_input_size).convert('RGB')
+    # preprocess
+    input_tensor = preprocess(model_image)
+
+    # create a mini-batch as expected by the model
+    input_batch = input_tensor.unsqueeze(0)
+
+    # output = net(input_batch)
+    prediction = model(input_batch)
+
+    top = list(enumerate(prediction[0].softmax(dim=0)))    
+    top.sort(key=lambda x: x[1], reverse=True)
+
+    result = ""
+    top_categories = []
+    for idx, val in top[:10]:
+        result_str = f"{val.item()*100:.2f}% {weights.meta['categories'][idx]}"
+        top_categories.append(weights.meta['categories'][idx])
+        result = result + (result_str + "\n")
+        print(result_str)
+
+    with open(filePath, "rb") as saved_image:
+        exif_image = ExifImage(saved_image)
+    
+    exif_image.user_comment = result
+
+    # this cases multiple writes for 1 image, not ideal
+    with open(filePath, 'wb') as new_image_file:
+        new_image_file.write(exif_image.get_file())
+    
+    return any(x in interesting_array for x in top_categories), result
 
 def take_photo():
     global picam2
@@ -122,10 +175,15 @@ def take_photo():
         static_dir = os.path.join(current_dir, save_dir)
         filepath = os.path.join(static_dir, image_name)
         request = picam2.capture_request()
-        request.save("main", filepath)
+        image = request.make_image("main")
+
+        # request.save("main", filepath)
+        image.save(filepath)
+
         request.release()
         logging.info(f"Image captured successfully. Path: {filepath}")
-        return filepath
+
+        return filepath, image
     except Exception as e:
         logging.error(f"Error capturing image: {e}")
 
@@ -179,13 +237,25 @@ def main():
     numOfFrames = 5
     availableFunctions = {"send_email": send_email}
     global lastEmailTs
+    captureMode = False
 
     while True:
-        filePath = capture_photo()
+        filePath, image = take_photo()
+        if not captureMode:
+            interestingBool, objects_detected = is_interesting(image, filePath)
+            if interestingBool:
+                captureMode = True
+                print(f"Interesting image detected:\n {objects_detected}")
+            else:
+                print("Not interesting")
+                continue
+
         base64_image = encode_image(filePath)
         if len(base64Frames) < numOfFrames:
             base64Frames.append(base64_image)
         else:
+            # We got enough frames, let's process them
+            captureMode = False 
             collageFilePath = save_image_collage(base64Frames)
             aiResponse = describe_image(base64Frames)
             if (aiResponse.tool_calls):
