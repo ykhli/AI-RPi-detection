@@ -244,7 +244,7 @@ def main():
             interestingBool, objects_detected = is_interesting(image, filePath)
             if interestingBool:
                 captureMode = True
-                print(f"Interesting image detected: {objects_detected}")
+                print(f"Interesting image detected:\n {objects_detected}")
             else:
                 print("Not interesting")
                 continue
