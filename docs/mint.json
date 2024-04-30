@@ -7,6 +7,7 @@
     "light": "#FAFAFA",
     "dark": "#0E0E0E"
   },
+  "feedback": { "thumbsRating": true },
   "topbarLinks": [
     {
       "name": "GitHub",
