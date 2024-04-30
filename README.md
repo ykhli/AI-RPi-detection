@@ -2,12 +2,13 @@
 
 A hardware AI starter kit for cat detection and narration .... on your Raspberry Pi! 🥧🍓
 
-Demo (sound on 🔊):
+**Demo** (sound on 🔊):
 
 [![AI cat detection demo](http://img.youtube.com/vi/8KSAiwyDoy8/0.jpg)](http://www.youtube.com/watch?v=8KSAiwyDoy8 "AI Cat Detection & Narration")
 
 https://www.youtube.com/watch?v=8KSAiwyDoy8
 
+Have questions? Join [AI Stack devs](https://discord.gg/TsWCNVvRP5)
 
 This starter kit is super simple: it allows you to use your Raspberry Pi to monitor what your cat does at home, and email you when your cat does something it's not supposed to do. **My #1 use case is detecting if my cats are jumping on my dinning table or kitchen counter.** You could also opt to turn this into an AI narrator, where the voice narrates on everything it sees.
 
