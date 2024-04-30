@@ -22,22 +22,17 @@
     {
       "name": "Community",
       "icon": "discord",
-      "url": "https://discord.gg/Kv74k3jr"
+      "url": "https://discord.gg/ymEUwGeMre"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "dev-environment"
-      ]
+      "pages": ["introduction", "quickstart", "dev-environment"]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "x": "https://twitter.com/stuffyokodraws",
+    "github": "https://github.com/ykhli/AI-RPi-detection"
   }
 }
