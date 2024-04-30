@@ -7,3 +7,5 @@ python-dotenv==0.21.0
 torch==2.2.1
 torchvision==0.17.1
 exif==1.6.0
+langchain-core==0.1.46
+langchain-openai==0.1.4
