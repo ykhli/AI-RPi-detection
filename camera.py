@@ -78,7 +78,7 @@ def send_email(detected, description, filePath):
     params = {
         "from": os.environ.get("FROM_EMAIL"),
         "to": [os.environ.get("TO_EMAIL")],
-        "subject": "AI dection!",
+        "subject": "AI Detection!",
         "html": f"<strong>{description}</strong>",
         "attachments": [{"content": list(f), "filename": "image.jpg"}],
     }

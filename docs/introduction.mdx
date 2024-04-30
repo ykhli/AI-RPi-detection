@@ -9,11 +9,15 @@ description: A hardware AI starter kit for cat detection and narration .... on y
 
 sound on 🔊
 
-<Frame>
-  <video controls autoPlay loop>
-    <source src="/assets/demo.mp4" type="video/mp4" />
-  </video>
-</Frame>
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/8KSAiwyDoy8"
+  title="AI cat detection"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
 
 This starter kit is super simple: it allows you to use your Raspberry Pi to monitor what your cat does at home, and email you when your cat does something it's not supposed to do. My #1 use case is detecting if my cats are jumping on my dinning table or kitchen counter. You could also opt to turn this into an AI narrator, where the voice narrates on everything it sees.
 
@@ -104,6 +108,7 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
 >
   For narration (optional)
 </Card>
+
 <Card
   title="Langchain"
   icon={
@@ -114,7 +119,21 @@ Of course this doesn't just work for cats 😄. You are welcomed to simply chang
   href="https://www.langchain.com/"
 >
   For orchestration and function calling
+
 </Card>
+
+
+<Card
+  title="PyTorch Torchvision"
+  icon={
+<svg className="h-5 w-5 fill-primary dark:fill-primary-light" width="100px" height="100px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><title>PyTorch icon</title><path d="M12.005.04l-7.03 7.03a9.832 9.832 0 0 0 0 13.975 9.833 9.833 0 0 0 13.976 0c3.97-3.887 3.972-10.171.084-13.976l-1.738 1.737c2.895 2.895 2.895 7.608 0 10.503-2.894 2.894-7.608 2.894-10.503 0C3.9 16.414 3.9 11.7 6.794 8.806l4.632-4.631.58-.663zm3.556 3.886a1.323 1.323 0 0 0-1.323 1.323 1.323 1.323 0 0 0 1.323 1.323 1.323 1.323 0 0 0 1.323-1.323 1.323 1.323 0 0 0-1.323-1.323z"/></svg>
+
+  }
+  href="https://pytorch.org/vision/stable/index.html"
+>
+  For local object classication (optional)
+
+
 <Card title="Cats" icon="cat">
   Not included in the repo
 </Card>
