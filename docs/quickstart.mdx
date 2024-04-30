@@ -34,21 +34,27 @@ cp .env.example .env
 
 ### 4. Get OpenAI API key
 
-Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` in the .env file
+Visit https://platform.openai.com/account/api-keys to get your OpenAI API key and set the `OPENAI_API_KEY` in the `.env` file
 
 ### 5. Get Resend key
 
-Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` in the .env file
+Visit https://resend.com/api-keys to get your Resend API key and set `RESEND_API_KEY` in the `.env` file
 
 Note that before using Resend to send emails, you also need to verify your domain [here](https://resend.com/domains). Resend also has a helpful guide on [everything related to domains](https://resend.com/docs/dashboard/domains/introduction).
 
+You can send text messages to your phone by email using your cellphone provider's email SMS gateway. See this article [here](https://www.digitaltrends.com/mobile/how-to-send-a-text-from-your-email-account/) for how it works and common US providers' gateway.
+
 ### 6. (Optional) Get ElevenLabs key
 
-a. Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the .env file
+a. Go to https://elevenlabs.io/, log in, and click on your profile picture on lower left. Select "Profile + API key". Copy the API key and save it as `ELEVEN_API_KEY` in the `.env` file
 
-b. Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in .env
+b. Select a 11labs voice by clicking on "Voices" on the left side nav bar and navigate to "VoiceLab". Copy the voice ID and save it as `ELEVEN_VOICE_ID_VOICE_ID` in `.env`
 
-### 7. Run the program
+### 7. (Optional) Enable local object detection
+
+Set `USE_LOCAL_MODEL` in your `.env` file to `true`. See variable `interesting_array` in `camera.py` for trigger objects. Helpful to cut down OpenAI calls but off by default to speed up start up time.
+
+### 8. Run the program
 
 ```
 python camera.py

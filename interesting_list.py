@@ -1,4 +1,6 @@
+# See https://www.image-net.org/challenges/LSVRC/2017/browse-synsets.php for a list of ImageNet classes detected by the local pytorch model
 
+# List of animals from ImageNet because animals are interesting. Use this for cats and dogs as it'll be more forgiving for misclassifications by the local model
 animals = [
     "kit fox", "English setter", "Australian terrier", "grey whale", "lesser panda", "Egyptian cat",
     "ibex", "Persian cat", "cougar", "gazelle", "porcupine", "sea lion", "badger", "Great Dane",
